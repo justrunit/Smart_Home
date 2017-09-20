@@ -1,0 +1,63 @@
+//only works with TCP so far
+
+
+#include <ESP8266WiFi.h>
+// open http://192.168.1.129/, or whatever IP is given and follow
+const char* ssid = "All_Your_Base";
+const char* password = "belongtous";
+ 
+
+#define DENSTINATION_IP_ADDRESS 192,168,1,147
+IPAddress destinationIp(DENSTINATION_IP_ADDRESS); 
+void setup() {
+  Serial.begin(115200);
+  delay(10);
+ 
+ 
+  
+  Serial.println();
+  Serial.print("Connecting to ");
+  Serial.println(ssid);
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(ssid, password);
+ 
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println("");
+  Serial.println("WiFi connected");
+  Serial.print(WiFi.localIP());
+  Serial.println("/");
+  
+  
+  
+ 
+}
+
+void loop() {
+  delay(500);
+  WiFiClient client;
+  int Port=50000;
+  while (!client.connect(destinationIp,Port)) {
+    Serial.println("connection failed");
+    delay(10);
+    return;
+  }
+  int times=0;
+  while (true)
+  { 
+    delay(1000);
+    
+    times++;
+    client.print(("hi"+String(times))+"\r");
+    Serial.println("sending hi"+String(times));
+    if(client.available()){
+    String line = client.readStringUntil('\r');
+    Serial.print(line);
+    }
+    
+  }
+ 
+
+}
